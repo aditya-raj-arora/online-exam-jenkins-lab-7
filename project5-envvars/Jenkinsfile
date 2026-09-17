@@ -3,10 +3,10 @@ pipeline {
 
     environment {
         APP_NAME         = 'OnlineExamSystem'
-        APP_VERSION      = '1.0.0'
+        APP_VERSION      = '2.0.0'
         INSTITUTION      = 'VIT Vellore'
         EXAM_DURATION    = '90'
-        PASS_MARK        = '40'
+        PASS_MARK        = '60'
         NEGATIVE_MARKING = 'true'
         NEGATIVE_RATIO   = '0.25'
         MAX_ATTEMPTS     = '1'
