@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    parameters {
+        booleanParam(name: 'RUN_EXTRA_CHECK', defaultValue: true,
+                     description: 'Run the evaluator test suite')
+        booleanParam(name: 'GENERATE_GRADE_SHEET', defaultValue: false,
+                     description: 'Print the grade sheet for the sample batch')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/<your-username>/online-exam-jenkins.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                dir('project4-conditional') {
+                    bat 'python -m py_compile evaluator.py'
+                    echo 'Build successful: evaluator.py compiled with no syntax errors'
+                    bat 'python -u evaluator.py'
+                }
+            }
+        }
+        stage('Extra Check') {
+            when {
+                expression { params.RUN_EXTRA_CHECK == true }
+            }
+            steps {
+                echo 'Running extra check: evaluator test suite...'
+                dir('project4-conditional') {
+                    bat 'python -u extra_check.py'
+                }
+            }
+        }
+        stage('Grade Sheet') {
+            when {
+                expression { params.GENERATE_GRADE_SHEET == true }
+            }
+            steps {
+                echo 'Generating grade sheet for the sample batch...'
+                dir('project4-conditional') {
+                    bat 'python -u grade_sheet.py'
+                }
+            }
+        }
+    }
+}

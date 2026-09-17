@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/<your-username>/online-exam-jenkins.git'
+            }
+        }
+        stage('Generate Report') {
+            steps {
+                dir('project2-artifacts') {
+                    bat 'python -u app.py'
+                    bat 'type reports\\result_report.txt'
+                }
+            }
+        }
+        stage('Archive Report') {
+            steps {
+                archiveArtifacts artifacts: 'project2-artifacts/reports/*', fingerprint: true
+            }
+        }
+    }
+}

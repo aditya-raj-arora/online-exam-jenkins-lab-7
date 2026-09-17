@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/<your-username>/online-exam-jenkins.git'
+            }
+        }
+        stage('Parallel Checks') {
+            parallel {
+                stage('Question Bank Check') {
+                    steps {
+                        dir('project3-parallel') {
+                            bat 'python -u question_bank_check.py'
+                        }
+                    }
+                }
+                stage('Evaluation Engine Check') {
+                    steps {
+                        dir('project3-parallel') {
+                            bat 'python -u evaluation_check.py'
+                        }
+                    }
+                }
+                stage('Exam Session Check') {
+                    steps {
+                        dir('project3-parallel') {
+                            bat 'python -u session_check.py'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Summary') {
+            steps {
+                echo 'Question bank, evaluation engine and exam session checks are all complete.'
+                echo 'Each check takes about 3 seconds: ~9 s if run one by one, ~3 s in parallel.'
+            }
+        }
+    }
+}

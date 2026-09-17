@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['dev', 'staging', 'prod'],
+               description: 'Select the deployment environment for the Online Exam System')
+        string(name: 'EXAM_CODE', defaultValue: 'ISWE406P-QUIZ1',
+               description: 'Exam code this build is prepared for')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/<your-username>/online-exam-jenkins.git'
+            }
+        }
+        stage('Show Parameter') {
+            steps {
+                echo "Selected environment : ${params.ENVIRONMENT}"
+                echo "Exam code            : ${params.EXAM_CODE}"
+            }
+        }
+        stage('Build for Environment') {
+            steps {
+                echo "Building the Online Exam System for the ${params.ENVIRONMENT} environment..."
+                dir('project1-parameterized') {
+                    bat "python -u config_builder.py ${params.ENVIRONMENT} \"${params.EXAM_CODE}\""
+                    bat 'type build_info.json'
+                }
+            }
+        }
+    }
+}
